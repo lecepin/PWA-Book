@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>剪切板操作</title>
+</head>
+
+<body>
+  <input id="copy" value="这是一段文字" />
+  <div>
+    <button id="btnCopy">复制</button>
+  </div>
+  <input id="paster" />
+  <div>
+    <button id="btnPaster">粘贴</button>
+  </div>
+</body>
+
+</html>
+
+<script type="module">
+  let btnCopyDom = document.getElementById("btnCopy");
+  let btnPasterDom = document.getElementById("btnPaster");
+  let copyValueDom = document.getElementById("copy");
+  let pasterValueDom = document.getElementById("paster");
+
+  btnCopyDom.onclick = () => {
+    if (!"clipboard" in navigator) {
+      alert("不支持 clipboard API");
+      return;
+    }
+
+    navigator.clipboard
+      .writeText(copyValueDom.value)
+      .then(() => {
+        console.log(`复制 ${copyValueDom.value} 成功`);
+      })
+      .catch(err => {
+        console.error(`复制失败`, err);
+      });
+  };
+
+  btnPasterDom.onclick = () => {
+    if (!"clipboard" in navigator) {
+      alert("不支持 clipboard API");
+      return;
+    }
+    navigator.clipboard
+      .readText()
+      .then(e => {
+        pasterValueDom.value = e;
+        console.log(`粘贴 ${e} 成功`);
+      })
+      .catch(err => {
+        console.error(`粘贴失败`, err);
+      });
+  };
+</script>

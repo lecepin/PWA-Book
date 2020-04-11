@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>推送通知</title>
+  </head>
+  <body>
+    <input type="text" id="content" value="这是一条消息" />
+    <button id="send">发送推送通知</button>
+
+    <script type="module">
+      navigator.serviceWorker
+        .register("sw.js")
+        .then((registration) => {
+          return registration.pushManager
+            .getSubscription() // 获取订阅信息
+            .then(async (subscription) => {
+              if (subscription) {
+                return subscription;
+              }
+              const response = await fetch("/get-public-key"); // 获取 VAPID 公钥
+              const vapidPublicKey = await response.text();
+              const convertedVapidKey = base64UrlToUint8Array(vapidPublicKey);
+              return registration.pushManager.subscribe({
+                // 订阅
+                userVisibleOnly: true,
+                applicationServerKey: convertedVapidKey,
+              });
+            });
+        })
+        .then((subscription) => {
+          // 将订阅信息发送给应用服务器
+          fetch("/save-subscription", {
+            method: "post",
+            headers: {
+              "Content-type": "application/json",
+            },
+            body: JSON.stringify({
+              subscription: subscription,
+            }),
+          });
+
+          document.getElementById("send").onclick = () => {
+            // 发送推送通知
+            const content = document.getElementById("content").value;
+
+            fetch("/send-push", {
+              method: "post",
+              headers: {
+                "Content-type": "application/json",
+              },
+              body: JSON.stringify({
+                content: content,
+              }),
+            });
+          };
+        });
+
+      function base64UrlToUint8Array(base64UrlData) {
+        const padding = "=".repeat((4 - (base64UrlData.length % 4)) % 4);
+        const base64 = (base64UrlData + padding)
+          .replace(/\-/g, "+")
+          .replace(/_/g, "/");
+
+        const rawData = window.atob(base64);
+        const buffer = new Uint8Array(rawData.length);
+
+        for (let i = 0; i < rawData.length; ++i) {
+          buffer[i] = rawData.charCodeAt(i);
+        }
+        return buffer;
+      }
+    </script>
+  </body>
+</html>

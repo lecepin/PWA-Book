@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>音视频捕获</title>
+</head>
+
+<body>
+  <div>
+    <button id="btnVi">捕获视频</button>
+  </div>
+  <video id="vi" controls width="350" height="200"></video>
+  <div>
+    <button id="btnAu">捕获音频</button>
+  </div>
+  <audio id="au" controls></audio>
+</body>
+
+</html>
+
+<script type="module">
+  document.getElementById("btnVi").onclick = () => {
+    getStream("video", document.getElementById("vi"));
+  };
+  document.getElementById("btnAu").onclick = () => {
+    getStream("audio", document.getElementById("au"));
+  };
+
+  function getStream(type, el) {
+    if (!navigator.mediaDevices) {
+      alert("mediaDevices API 不支持");
+      return;
+    }
+
+    navigator.mediaDevices
+      .getUserMedia({ [type]: true })
+      .then(stream => {
+        if ("srcObject" in el) {
+          el.srcObject = stream;
+        } else {
+          el.src = window.URL.createObjectURL(stream);
+        }
+        el.onloadedmetadata = () => {
+          el.play();
+        };
+      })
+      .catch(err => {
+        console.log("捕获视频错误：", err);
+      });
+  }
+</script>

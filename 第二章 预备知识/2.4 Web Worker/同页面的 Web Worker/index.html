@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+</head>
+
+<body>
+  <button id="send">发送消息</button>
+  <script id="webworker" type="app/webworker">
+      self.onmessage = e => {
+        console.log("收到 index.html 信息", e.data);
+        if (e.data.type == "send") {
+          self.postMessage("received");
+        }
+      };
+    </script>
+  <script>
+    const blob = new Blob([document.getElementById("webworker").textContent]);
+    const url = window.URL.createObjectURL(blob);
+    const worker = new Worker(url);
+    document.getElementById("send").onclick = () => {
+      worker.postMessage({
+        type: "send"
+      });
+    };
+
+    worker.onmessage = e => {
+      console.log("收到 worker 信息", e.data);
+    };
+  </script>
+</body>
+
+</html>

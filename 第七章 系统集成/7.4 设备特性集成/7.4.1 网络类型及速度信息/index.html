@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    if (!navigator.connection) {
+      console.log("不支持 Network Information API");
+      return;
+    }
+
+    console.log("底层连接类型：" + navigator.connection.type);
+    console.log("有效连接类型：" + navigator.connection.effectiveType);
+    console.log("最大下行速度(MB)：" + navigator.connection.downlinkMax);
+
+    navigator.connection.onchange = info => { }; // 网络信息发生变化时触发
+  </script>
+</body>
+
+</html>

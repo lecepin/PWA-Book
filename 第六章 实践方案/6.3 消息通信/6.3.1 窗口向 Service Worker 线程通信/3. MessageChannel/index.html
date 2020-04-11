@@ -1,0 +1,15 @@
+<script type="module">
+  if (navigator.serviceWorker.controller) {
+    const c = new MessageChannel();
+    c.port1.onmessage = e => {
+      // 收到传给 port1 的消息
+      console.log("index.html port1收到消息：", e.data);
+    };
+
+    // 向 port2 发送消息
+    navigator.serviceWorker.controller.postMessage(
+      "这是 index.html 的消息",
+      [c.port2]
+    );
+  }
+</script>

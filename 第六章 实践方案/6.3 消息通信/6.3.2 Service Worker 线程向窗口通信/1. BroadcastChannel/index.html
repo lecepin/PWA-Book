@@ -1,0 +1,8 @@
+<script type="module">
+  const bc1 = new BroadcastChannel("c1");
+
+  bc1.onmessage = e => {
+    // 页面层收到广播，逻辑处理
+    console.log(e.data);
+  };
+</script>

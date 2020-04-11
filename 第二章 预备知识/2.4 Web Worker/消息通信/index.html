@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+</head>
+
+<body>
+  <button id="send">发送消息</button>
+  <script>
+    const worker = new Worker("worker.js");
+    document.getElementById("send").onclick = () => {
+      worker.postMessage({
+        type: "send"
+      });
+    };
+
+    worker.onmessage = e => {
+      console.log("收到 worker 信息", e.data);
+    };
+  </script>
+</body>
+
+</html>

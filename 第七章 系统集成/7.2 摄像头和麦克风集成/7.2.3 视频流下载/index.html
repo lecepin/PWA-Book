@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>视频下载</title>
+</head>
+
+<body>
+  <div>
+    <button id="btnVi">捕获视频 & 开始记录</button>
+  </div>
+  <video id="vi" controls width="350" height="200"></video>
+  <div>
+    <button id="btnPhoto">下载</button>
+  </div>
+</body>
+
+</html>
+
+<script type="module">
+  let vStream;
+  let vRecorder;
+  let recorderData = [];
+
+  document.getElementById("btnVi").onclick = () => {
+    getStream(document.getElementById("vi"));
+  };
+  document.getElementById("btnPhoto").onclick = () => {
+    download();
+  };
+
+  function getStream(el) {
+    if (!navigator.mediaDevices) {
+      alert("mediaDevices API 不支持");
+      return;
+    }
+
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: true })
+      .then(stream => {
+        vStream = stream;
+        if ("srcObject" in el) {
+          el.srcObject = stream;
+        } else {
+          el.src = window.URL.createObjectURL(stream);
+        }
+        el.onloadedmetadata = () => {
+          el.play();
+        };
+
+        try {
+          vRecorder = new MediaRecorder(stream, { mimeType: "video/webm" });
+          console.log("创建 MediaRecorder: ", vRecorder);
+        } catch (e) {
+          return console.error("创建 MediaRecorder 失败：", e);
+        }
+
+        vRecorder.ondataavailable = e => {
+          if (e.data.size == 0) {
+            return;
+          }
+          recorderData.push(event.data);
+        };
+        vRecorder.start(100); // 设置 ondataavailable 的触发间隔
+      })
+      .catch(err => {
+        console.log("捕获视频错误：", err);
+      });
+  }
+
+  function download() {
+    if (!vStream || !vRecorder) {
+      alert("请先捕获视频");
+      return;
+    }
+    console.log("开始下载");
+    vRecorder.stop();
+    vStream.getTracks()[0].stop();
+    vStream.getVideoTracks()[0].stop();
+
+    const aDom = document.createElement("a");
+    document.body.appendChild(aDom);
+    aDom.style = "display: none";
+    aDom.href = URL.createObjectURL(
+      new Blob(recorderData, { type: "video/webm" })
+    );
+    aDom.download = "download.webm";
+    aDom.click();
+
+    recorderData = [];
+    vStream = vRecorder = null;
+  }
+</script>

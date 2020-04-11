@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>本地定位</title>
+</head>
+
+<body>
+  <div id="content" style="width: 420px; height: 200px;border: 1px solid #333;"></div>
+  <div>
+    <button id="btnGet">获取位置</button>
+    <button id="btnWatch">监听位置变化</button>
+  </div>
+</body>
+<script type="module">
+  let btnGet = document.getElementById("btnGet");
+  let btnWatch = document.getElementById("btnWatch");
+  let contentDom = document.getElementById("content");
+  let watcher;
+
+  btnGet.onclick = () => {
+    if (!"geolocation" in navigator) {
+      alert("不支持 Geolocation API");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      info => {
+        console.log("获取位置成功", info);
+        contentDom.innerText += `获取位置：\n纬度 ${info.coords.latitude} 经度 ${info.coords.longitude}\n`;
+      },
+      err => {
+        console.log("获取位置错误", err);
+      },
+      {
+        enableHighAccuracy: false, // 低精度，获取速度快
+        timeout: Infinity, // 设备必须在多长时间内获取值 ms
+        maximumAge: 0 // 定位信息的缓存时间 ms
+      }
+    );
+  };
+
+  btnWatch.onclick = () => {
+    if (!"geolocation" in navigator) {
+      alert("不支持 Geolocation API");
+      return;
+    }
+
+    if (btnWatch.innerText == "监听位置变化") {
+      if (watcher) {
+        return;
+      }
+      watcher = navigator.geolocation.watchPosition(
+        info => {
+          console.log("监听位置变化：", info);
+          contentDom.innerText += `监听位置变化：\n纬度 ${info.coords.latitude} 经度 ${info.coords.longitude}\n`;
+        },
+        err => {
+          console.log("监听位置变化错误", err);
+        },
+        {}
+      );
+      btnWatch.innerText = "停止监听位置变化";
+      return;
+    }
+
+    watcher && navigator.geolocation.clearWatch(watcher);
+    contentDom.innerText += "监听停止\n";
+    console.log("监听停止");
+    btnWatch.innerText = "监听位置变化";
+  };
+</script>
+
+</html>

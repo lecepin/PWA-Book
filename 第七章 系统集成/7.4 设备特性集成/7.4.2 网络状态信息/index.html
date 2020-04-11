@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    if (navigator.onLine) {
+      console.log("你的网络当前在线");
+    } else {
+      console.log("你的网络当前离线");
+    }
+
+    window.ononline = () => {
+      console.log("网络状态变化：当前网络在线");
+    };
+
+    window.onoffline = () => {
+      console.log("网络状态变化：当前网络离线");
+    };
+  </script>
+</body>
+
+</html>

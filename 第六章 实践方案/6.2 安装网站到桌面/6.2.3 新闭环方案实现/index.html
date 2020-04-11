@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script type="module">
+    if (window.matchMedia("(display-mode: standalone)").matches) {
+      document.body.addEventListener("click", e => {
+        var linkDom = e.target.closest("a"); // 拦截所有 a 的 click 事件
+        if (!linkDom) {
+          return;
+        }
+        var linkHref = linkDom.href;
+        var linkTarget = linkDom.target;
+
+        if (linkTarget == "_blank") {
+          return window.open(linkHref, "_blank");
+        }
+
+        event.preventDefault();
+        var _url = new URL(linkHref);
+        var newUrl = // 构造打点数据
+          _url.origin +
+          _url.pathname +
+          _url.search +
+          (_url.search ? "&from_pwa" : "?from_pwa") +
+          _url.hash;
+
+        localStorage.setItem("_pwa_last_url", newUrl); // 写入链接信息
+        localStorage.setItem("_pwa_last_url_time", Date.now());
+
+        window.location.href = newUrl;
+      });
+    }
+  </script>
+</body>
+
+</html>

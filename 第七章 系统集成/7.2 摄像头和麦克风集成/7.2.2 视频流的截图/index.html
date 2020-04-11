@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>视频截图</title>
+</head>
+
+<body>
+  <div>
+    <button id="btnVi">捕获视频</button>
+  </div>
+  <video id="vi" controls width="350" height="200"></video>
+  <div>
+    <button id="btnPhoto">视频截图</button>
+  </div>
+  <img id="photo" style="border: 1px solid #aaa;width:350px;height:200px;" />
+</body>
+
+</html>
+
+<script type="module">
+  let vStream;
+
+  document.getElementById("btnVi").onclick = () => {
+    getStream("video", document.getElementById("vi"));
+  };
+  document.getElementById("btnPhoto").onclick = () => {
+    takePhoto(vStream);
+  };
+
+  function getStream(type, el) {
+    if (!navigator.mediaDevices) {
+      alert("mediaDevices API 不支持");
+      return;
+    }
+
+    navigator.mediaDevices
+      .getUserMedia({ [type]: true })
+      .then(stream => {
+        vStream = stream;
+        if ("srcObject" in el) {
+          el.srcObject = stream;
+        } else {
+          el.src = window.URL.createObjectURL(stream);
+        }
+        el.onloadedmetadata = () => {
+          el.play();
+        };
+      })
+      .catch(err => {
+        console.log("捕获视频错误：", err);
+      });
+  }
+
+  function takePhoto(stream) {
+    if (!stream) {
+      alert("请先进行视频捕获。");
+      return;
+    }
+    if (!("ImageCapture" in window)) {
+      alert("ImageCapture API 不支持。");
+      return;
+    }
+
+    new ImageCapture(stream.getVideoTracks()[0])
+      .takePhoto()
+      .then(data => {
+        document.getElementById("photo").src = URL.createObjectURL(data);
+      })
+      .catch(err => console.log("截图错误: ", err));
+  }
+</script>

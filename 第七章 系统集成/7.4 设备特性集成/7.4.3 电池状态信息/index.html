@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    if (!navigator.getBattery || !navigator.battery) {
+      console.log("不支持 BatteryManager API");
+    } else {
+      (navigator.getBattery() || Promise.resolve(navigator.battery)).then(
+        battery => {
+          console.log("当前电池充电：" + battery.charging);
+          console.log("距离充电完成还剩(S)：" + battery.chargingTime); // 0 为充电完成
+          console.log("距离电池耗尽还剩(S)" + battery.dischargingTime);
+          console.log("电池放点等级：" + battery.level);
+
+          battery.onchargingchange; //电池充电状态更新时被调用。
+          battery.onchargingtimechange; // 电池充电时间更新时被调用。
+          battery.ondischargingtimechange; //电池断开充电时间更新时被调用。
+          battery.onlevelchange; //电池电量更新时被调用。
+        }
+      );
+    }
+  </script>
+</body>
+
+</html>

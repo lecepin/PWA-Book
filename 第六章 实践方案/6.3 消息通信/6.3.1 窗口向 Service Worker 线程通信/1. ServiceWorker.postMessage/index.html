@@ -1,0 +1,14 @@
+<script type="module">
+  navigator.serviceWorker.register("sw.js");
+  if (navigator.serviceWorker.controller) {
+    // 向 Service Worker 线程发送消息
+    navigator.serviceWorker.controller.postMessage(
+      "这是从 window 环境发送的消息"
+    );
+  }
+
+  // 接收来自 Service Worker 发来的消息
+  navigator.serviceWorker.onmessage = e => {
+    console.log("index.html 收到消息:", e.data);
+  };
+</script>

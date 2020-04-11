@@ -1,0 +1,14 @@
+<script type="module">
+  (function () { // 防止污染
+    if (window.addEventListener) {
+      window.addEventListener("load", () => {
+        var script = document.createElement("script");
+        script.src = "sw.reg.mgr.js?t=" + Date.now(); // 无缓存引用
+        script.async = true;
+        script.type = "text/javascript";
+        script.crossOrigin = "anonymous";
+        document.head.insertBefore(script, document.head.firstChild);
+      });
+    }
+  })();
+</script>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>设备位置</title>
+</head>
+
+<body>
+  <img id="img" src="img.png" />
+  <div id="content"></div>
+</body>
+<script type="module">
+  let img = document.getElementById("img");
+  let content = document.getElementById("content");
+
+  window.ondeviceorientation = e => {
+    let { gamma, beta, alpha } = e;
+    console.log(alpha, beta, gamma);
+
+    img.style.transform = `rotate(${alpha}deg) rotate3d(1, 0, 0, ${beta}deg)`;
+    content.innerHTML = `
+      alpha(方向): ${alpha} deg<br />
+      beta(前后): ${beta} deg<br />
+      gamma(左右): ${gamma} deg
+      `;
+  };
+</script>
+
+</html>
